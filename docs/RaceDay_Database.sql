@@ -8,7 +8,12 @@ GO
 USE RaceDayDB;
 GO
 
+-- Drop tables if they already exist so the script can be run again without errors
+DROP TABLE IF EXISTS Result;
+DROP TABLE IF EXISTS Enrolment;
+DROP TABLE IF EXISTS Category;
 
+GO
 
  
 -- TABLE: User
