@@ -120,9 +120,7 @@ GO
 INSERT INTO Category (EventId, Name) VALUES
 (1, 'Senior'),
 (1, 'Under 20'),
-(2, '109km'),
-(2, '56km'),
-(3, '5km Open');
+
 GO
 
 -- Enrolments: Participants entering events
