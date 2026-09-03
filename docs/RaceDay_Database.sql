@@ -113,7 +113,6 @@ GO
 INSERT INTO Event (OrganiserId, Name, Description, EventDate, Location, Distance, EventType, BannerImageUrl) VALUES
 (1, 'Comrades Marathon', 'Iconic ultra-marathon between Pietermaritzburg and Durban.', '2026-06-14', 'Pietermaritzburg', 89.00, 'Run', NULL),
 (2, 'Cape Town Cycle Tour', 'Scenic cycling event around the Cape Peninsula.', '2026-03-08', 'Cape Town', 109.00, 'Cycle', NULL),
-(1, 'Durban Park Run', 'Community 5km run/walk event.', '2026-09-20', 'Durban', 5.00, 'Walk', NULL);
 GO
 
 -- Categories per event
