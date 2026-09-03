@@ -97,7 +97,8 @@ GO
 INSERT INTO [User] (FullName, Email, PasswordHash, Role) VALUES
 ('Thabo Nkosi', 'thabo.nkosi@raceday.co.za', 'hashed_password_1', 'Organiser'),
 ('Lerato Dube', 'lerato.dube@raceday.co.za', 'hashed_password_2', 'Organiser'),
-
+('Sipho Zulu', 'sipho.zulu@raceday.co.za', 'hashed_password_3', 'Participant'),
+('Amahle Khumalo', 'amahle.khumalo@raceday.co.za', 'hashed_password_4', 'Participant');
 GO
 
 -- Profiles for each user
