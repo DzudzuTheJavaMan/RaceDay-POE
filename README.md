@@ -19,7 +19,7 @@ All the planning documents in Part 1 can be found in the `/docs` folder:
 ## CI/CD
 A GitHub Actions workflow (`.github/workflows/part1-validation.yml`) runs on every push and validates that the `/docs` folder exists and contains all required Part 1 files.
 **Build status screenshot:**
-_[Insert screenshot of the green Actions build here]_
+_<img width="1917" height="983" alt="Screenshot 2026-09-03 235444" src="https://github.com/user-attachments/assets/92860ddd-adb5-4ed6-a37f-0daa61ce0b2c" />
 ## Video
 **Part 1 walkthrough:** _[Insert unlisted YouTube link here]_
 The video covers the ERD design decisions, the API endpoint plan, and a live run of the SQL script in SSMS.
