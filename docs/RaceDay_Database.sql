@@ -50,7 +50,7 @@ CREATE TABLE Event (
     EventDate DATETIME NOT NULL,
     Location NVARCHAR(150) NOT NULL,
     Distance DECIMAL(6,2) NOT NULL,
-    EventType NVARCHAR(20) NOT NULL CHECK (EventType IN ('Run', 'Walk', 'Cycle')),
+    EventType NVARCHAR(20) NOT NULL,
     BannerImageUrl NVARCHAR(255) NULL,
     CONSTRAINT FK_Event_Organiser FOREIGN KEY (OrganiserId) REFERENCES [User](UserId)
 );
