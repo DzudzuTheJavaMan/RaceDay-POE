@@ -75,8 +75,7 @@ CREATE TABLE Enrolment (
     Status NVARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (Status IN ('Pending', 'Confirmed')),
     CONSTRAINT FK_Enrolment_Participant FOREIGN KEY (ParticipantId) REFERENCES [User](UserId),
     CONSTRAINT FK_Enrolment_Event FOREIGN KEY (EventId) REFERENCES Event(EventId),
-    CONSTRAINT FK_Enrolment_Category FOREIGN KEY (CategoryId) REFERENCES Category(CategoryId),
-    CONSTRAINT UQ_Enrolment_Unique UNIQUE (ParticipantId, EventId)
+    CONSTRAINT FK_Enrolment_Category FOREIGN KEY (CategoryId) REFERENCES Category(CategoryId)
 );
 GO
 
