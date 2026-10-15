@@ -36,11 +36,11 @@ CREATE TABLE Profile (
     Phone NVARCHAR(20) NULL,
     City NVARCHAR(100) NULL,
     Province NVARCHAR(100) NULL,
-    ProfilePictureUrl NVARCHAR(255) NULL
+    ProfilePictureUrl NVARCHAR(255) NULL,
      CONSTRAINT FK_Profile_User FOREIGN KEY (UserId) REFERENCES [User](UserId)
 );
 GO
-
+--comment lol
 -- TABLE: Event
 CREATE TABLE Event (
     EventId INT IDENTITY(1,1) PRIMARY KEY,
