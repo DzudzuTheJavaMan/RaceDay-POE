@@ -1,5 +1,6 @@
 # RaceDay API (Part 2)
 
+REPO LINK:https://github.com/DzudzuTheJavaMan/RaceDay-POE
 PROG6212 PoE Part 2. A RESTful ASP.NET Core Web API for RaceDay, an event management system for South African road running, walking and cycling events.
 
 Student: [ODZULAHO NEMBALENI], [ST10475597]
