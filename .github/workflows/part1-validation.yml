@@ -27,4 +27,4 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run unit tests
-        run: dotnet test --no-build --configuration Release --verbosity normal44444444444466666666666666666666666664444444444444444444444444444444444444444444
+        run: dotnet test --no-build --configuration Release
