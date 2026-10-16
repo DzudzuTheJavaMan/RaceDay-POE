@@ -2,7 +2,7 @@
 
 PROG6212 PoE Part 2. A RESTful ASP.NET Core Web API for RaceDay, an event management system for South African road running, walking and cycling events.
 
-Student: [YOUR NAME], [STUDENT NUMBER]
+Student: [ODZULAHO NEMBALENI], [ST10475597]
 
 ## Video
 
