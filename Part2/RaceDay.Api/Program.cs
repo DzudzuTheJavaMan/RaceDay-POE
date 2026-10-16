@@ -17,7 +17,11 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+});
 
 var app = builder.Build();
 
