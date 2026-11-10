@@ -1,9 +1,14 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
 using RaceDay.Api.Dtos;
 using RaceDay.Api.Filters;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
+
+
+
 
 namespace RaceDay.Api.Controllers;
 
@@ -199,5 +204,35 @@ public class EventsController : ControllerBase
         await _db.SaveChangesAsync();
 
         return StatusCode(201, new { category.CategoryId, category.EventId, category.Name });
+    }
+
+    /// <summary>Uploads a banner image for an event owned by the logged-in Organiser to Azure Blob Storage.</summary>
+    /// <remarks>Accepts a JPG, PNG or WEBP image up to 5 MB. The image URL is saved on the event.</remarks>
+    /// <response code="200">Banner uploaded, URL returned.</response>
+    /// <response code="400">Missing or invalid file.</response>
+    /// <response code="403">Not the event owner, or not an Organiser.</response>
+    /// <response code="404">Event does not exist.</response>
+    [HttpPost("{id}/banner")]
+    [SessionAuthorize("Organiser")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadBanner(int id, IFormFile file, [FromServices] BlobService blobs)
+    {
+        var ev = await _db.Events.FindAsync(id);
+        if (ev == null) return NotFound(new { message = "Event does not exist." });
+        if (ev.OrganiserId != CurrentUserId)
+            return StatusCode(403, new { message = "You do not own this event." });
+
+        var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (file == null || file.Length == 0 || file.Length > 5 * 1024 * 1024 || !allowed.Contains(file.ContentType))
+            return BadRequest(new { message = "Upload a JPG, PNG or WEBP image up to 5 MB." });
+
+        ev.BannerImageUrl = await blobs.UploadAsync(file);
+        await _db.SaveChangesAsync();
+
+        return Ok(new { ev.BannerImageUrl });
     }
 }

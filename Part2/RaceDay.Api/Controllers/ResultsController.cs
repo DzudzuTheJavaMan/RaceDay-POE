@@ -12,8 +12,6 @@ public class ResultRequest
     [Range(1, int.MaxValue)]
     public int EnrolmentId { get; set; }
 
-    /// <summary>Finish time as hh:mm:ss, for example 03:45:10.</summary>
-    [Required]
     public TimeSpan FinishTime { get; set; }
 
     [Range(1, int.MaxValue)]
@@ -21,7 +19,7 @@ public class ResultRequest
 }
 
 [ApiController]
-[Route("api")]
+[Route("api/results")]
 public class ResultsController : ControllerBase
 {
     private readonly RaceDayContext _db;
@@ -33,15 +31,15 @@ public class ResultsController : ControllerBase
 
     private int CurrentUserId => HttpContext.Session.GetInt32("UserId") ?? 0;
 
-    /// <summary>Captures the finish time and finishing position for a Participant's enrolment in an event owned by the logged-in Organiser.</summary>
-    /// <remarks>The enrolment must belong to the event. Each enrolment can only have one result.</remarks>
+    /// <summary>Captures a finish time and finishing position for a Participant's enrolment.</summary>
+    /// <remarks>Only the Organiser who owns the event can capture its results. FinishTime is sent as hh:mm:ss.</remarks>
     /// <response code="201">Result recorded.</response>
-    /// <response code="400">Invalid data or enrolment does not belong to this event.</response>
+    /// <response code="400">Invalid data.</response>
     /// <response code="401">Not logged in.</response>
     /// <response code="403">Not the event owner, or not an Organiser.</response>
-    /// <response code="404">Event or enrolment does not exist.</response>
-    /// <response code="409">Result already captured for this enrolment.</response>
-    [HttpPost("events/{id}/results")]
+    /// <response code="404">Enrolment does not exist.</response>
+    /// <response code="409">Result already captured.</response>
+    [HttpPost]
     [SessionAuthorize("Organiser")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,22 +47,19 @@ public class ResultsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> CaptureResult(int id, ResultRequest request)
+    public async Task<IActionResult> CaptureResult(ResultRequest request)
     {
-        var ev = await _db.Events.FindAsync(id);
-        if (ev == null) return NotFound(new { message = "Event does not exist." });
-        if (ev.OrganiserId != CurrentUserId)
-            return StatusCode(403, new { message = "You do not own this event." });
-
         if (request.FinishTime <= TimeSpan.Zero)
             return BadRequest(new { message = "Finish time must be greater than zero." });
 
-        var enrolment = await _db.Enrolments.FindAsync(request.EnrolmentId);
+        var enrolment = await _db.Enrolments
+            .Include(e => e.Event)
+            .FirstOrDefaultAsync(e => e.EnrolmentId == request.EnrolmentId);
+
         if (enrolment == null)
             return NotFound(new { message = "Enrolment does not exist." });
-        if (enrolment.EventId != id)
-            return BadRequest(new { message = "Enrolment does not belong to this event." });
-
+        if (enrolment.Event.OrganiserId != CurrentUserId)
+            return StatusCode(403, new { message = "You do not own this event." });
         if (await _db.Results.AnyAsync(r => r.EnrolmentId == request.EnrolmentId))
             return Conflict(new { message = "A result has already been captured for this enrolment." });
 
@@ -81,11 +76,12 @@ public class ResultsController : ControllerBase
         return StatusCode(201, new { result.ResultId, result.EnrolmentId, result.FinishTime, result.Position });
     }
 
-    /// <summary>Lists the logged-in Participant's own race results across all events.</summary>
-    /// <response code="200">List of results with event, category, finish time and position.</response>
+    /// <summary>Lists the logged-in Participant's personal race history.</summary>
+    /// <remarks>Includes event name, date, category, finish time, position and the total number of finishers for that event.</remarks>
+    /// <response code="200">List of results.</response>
     /// <response code="401">Not logged in.</response>
     /// <response code="403">Not a Participant.</response>
-    [HttpGet("results/me")]
+    [HttpGet("me")]
     [SessionAuthorize("Participant")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -98,12 +94,12 @@ public class ResultsController : ControllerBase
             .Select(r => new
             {
                 r.ResultId,
-                r.Enrolment.EventId,
                 EventName = r.Enrolment.Event.Name,
-                r.Enrolment.Event.EventDate,
+                EventDate = r.Enrolment.Event.EventDate,
                 CategoryName = r.Enrolment.Category.Name,
                 r.FinishTime,
-                r.Position
+                r.Position,
+                TotalFinishers = _db.Results.Count(x => x.Enrolment.EventId == r.Enrolment.EventId)
             })
             .ToListAsync();
 

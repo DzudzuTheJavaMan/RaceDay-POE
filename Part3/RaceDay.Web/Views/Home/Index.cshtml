@@ -1,8 +1,58 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model HomeIndexViewModel
+@{ ViewData["Title"] = "Upcoming events"; }
+
+<h2 class="mb-3">Upcoming events</h2>
+
+@if (TempData["Error"] != null)
+{
+<div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (ViewBag.Error != null)
+{
+<div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Search by name or location" />
+    </div>
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">All types</option>
+            <option value="Run" selected="@(Model.Type == "Run")">Run</option>
+            <option value="Walk" selected="@(Model.Type == "Walk")">Walk</option>
+            <option value="Cycle" selected="@(Model.Type == "Cycle")">Cycle</option>
+        </select>
+    </div>
+    <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Filter</button></div>
+    <div class="col-md-2"><a asp-action="Index" class="btn btn-outline-secondary w-100">Clear</a></div>
+</form>
+
+@if (!Model.Events.Any())
+{
+<p class="text-muted">No upcoming events match your search.</p>
+}
+
+<div class="row">
+    @foreach (var e in Model.Events)
+    {
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            @if (!string.IsNullOrEmpty(e.BannerImageUrl))
+                {
+            <img src="@e.BannerImageUrl" class="card-img-top" alt="Event banner" />
+                }
+            <div class="card-body">
+                <h5 class="card-title">@e.Name</h5>
+                <span class="badge bg-dark mb-2">@e.EventType</span>
+                <p class="card-text mb-1">@e.EventDate.ToString("dd MMM yyyy, HH:mm")</p>
+                <p class="card-text mb-1">@e.Location</p>
+                <p class="card-text">@e.Distance km</p>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a asp-action="Details" asp-route-id="@e.EventId" class="btn btn-primary btn-sm">View details</a>
+            </div>
+        </div>
+    </div>
+    }
 </div>

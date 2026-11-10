@@ -29,3 +29,26 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.raceday-nav {
+    background-color: #d6336c;
+}
+
+    .raceday-nav .nav-link,
+    .raceday-nav .navbar-brand {
+        color: #fff;
+    }
+
+        .raceday-nav .nav-link:hover {
+            color: #ffe3ec;
+        }
+
+.btn-primary {
+    background-color: #d6336c;
+    border-color: #d6336c;
+}
+
+    .btn-primary:hover {
+        background-color: #b02a5a;
+        border-color: #b02a5a;
+    }

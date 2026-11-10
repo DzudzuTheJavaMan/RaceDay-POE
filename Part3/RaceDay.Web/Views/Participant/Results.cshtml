@@ -1,0 +1,42 @@
+@model List<ResultItem>
+    @{
+    ViewData["Title"] = "My results";
+
+    string Ordinal(int n)
+    {
+        if (n % 100 >= 11 && n % 100 <= 13) return n + "th";
+        return (n % 10) switch { 1 => n + "st", 2 => n + "nd", 3 => n + "rd", _ => n + "th" };
+    }
+    }
+
+    <h2 class="mb-3">My results</h2>
+
+    @if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+    @if (!Model.Any())
+{
+    <p class="text-muted">No results yet. They appear here once an organiser captures them after your event.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.EventName</td>
+                <td>@r.EventDate.ToString("dd MMM yyyy")</td>
+                <td>@r.CategoryName</td>
+                <td>@r.FinishTime.ToString(@"hh\:mm\:ss")</td>
+                <td><strong>@Ordinal(r.Position)</strong> out of @r.TotalFinishers finishers</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

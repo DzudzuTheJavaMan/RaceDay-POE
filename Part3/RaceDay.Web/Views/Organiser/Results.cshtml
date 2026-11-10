@@ -1,0 +1,40 @@
+@model List<OrganiserEnrolmentItem>
+    @{ ViewData["Title"] = "Results"; }
+
+    <h2 class="mb-1">Capture results</h2>
+    <p class="text-muted">@ViewBag.EventName</p>
+
+    @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+    @if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+    @if (!Model.Any())
+{
+    <p class="text-muted">Nobody has enrolled yet, so there is nobody to capture results for.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Participant</th><th>Category</th><th>Finish time (hh:mm:ss)</th><th>Position</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var e in Model)
+        {
+            var formId = "f" + e.EnrolmentId;
+            <tr>
+                <td>@e.ParticipantName</td>
+                <td>@e.CategoryName</td>
+                <td><input form="@formId" type="text" name="finishTime" class="form-control form-control-sm" placeholder="01:23:45" /></td>
+                <td><input form="@formId" type="number" name="position" min="1" class="form-control form-control-sm" /></td>
+                <td>
+                    <form id="@formId" asp-action="SaveResult" method="post">
+                        <input type="hidden" name="eventId" value="@ViewBag.EventId" />
+                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+    <a asp-action="Events" class="btn btn-outline-secondary btn-sm">Back to my events</a>

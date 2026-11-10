@@ -1,0 +1,47 @@
+@model List<DashboardRow>
+    @{ ViewData["Title"] = "Dashboard"; }
+
+    <h2 class="mb-3">Organiser dashboard</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="display-6">@Model.Count</div><div class="text-muted">Upcoming events</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="display-6">@Model.Sum(r => r.Enrolments)</div><div class="text-muted">Total enrolments</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+{
+    <p class="text-muted">You have no upcoming events. <a asp-action="CreateEvent">Create one</a></p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Enrolments</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var row in Model.OrderBy(r => r.Event.EventDate))
+        {
+            <tr>
+                <td>@row.Event.Name</td>
+                <td>@row.Event.EventDate.ToString("dd MMM yyyy")</td>
+                <td><span class="badge bg-dark">@row.Event.EventType</span></td>
+                <td>@row.Enrolments</td>
+                <td class="text-end">
+                    <a asp-action="Enrolments" asp-route-id="@row.Event.EventId" class="btn btn-outline-primary btn-sm">Enrolments</a>
+                    <a asp-action="Results" asp-route-id="@row.Event.EventId" class="btn btn-outline-primary btn-sm">Results</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

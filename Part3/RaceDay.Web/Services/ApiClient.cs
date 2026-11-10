@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -41,16 +42,12 @@ public class ApiClient
 
     private ISession Session => _ctx.HttpContext!.Session;
 
-    public async Task<ApiResult> SendAsync(HttpMethod method, string url, object? body = null)
+    private async Task<ApiResult> Send(HttpRequestMessage request)
     {
         var client = _factory.CreateClient("api");
-        var request = new HttpRequestMessage(method, url);
 
         var cookie = Session.GetString("ApiCookie");
         if (!string.IsNullOrEmpty(cookie)) request.Headers.Add("Cookie", cookie);
-
-        if (body != null)
-            request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
 
         try
         {
@@ -72,6 +69,26 @@ public class ApiClient
                 Body = "{\"message\":\"The service is unavailable right now. Please try again later.\"}"
             };
         }
+    }
+
+    public Task<ApiResult> SendAsync(HttpMethod method, string url, object? body = null)
+    {
+        var request = new HttpRequestMessage(method, url);
+        if (body != null)
+            request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+        return Send(request);
+    }
+
+    public async Task<ApiResult> PostFileAsync(string url, IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var content = new MultipartFormDataContent();
+        var fileContent = new StreamContent(stream);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+        content.Add(fileContent, "file", file.FileName);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
+        return await Send(request);
     }
 
     public Task<ApiResult> GetAsync(string url) => SendAsync(HttpMethod.Get, url);

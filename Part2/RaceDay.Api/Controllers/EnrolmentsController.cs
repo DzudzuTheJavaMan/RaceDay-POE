@@ -72,7 +72,10 @@ public class EnrolmentsController : ControllerBase
 
         return StatusCode(201, new
         {
-            enrolment.EnrolmentId, enrolment.EventId, enrolment.CategoryId, enrolment.Status
+            enrolment.EnrolmentId,
+            enrolment.EventId,
+            enrolment.CategoryId,
+            enrolment.Status
         });
     }
 
@@ -140,5 +143,32 @@ public class EnrolmentsController : ControllerBase
             .ToListAsync();
 
         return Ok(list);
+    }
+    /// <summary>Confirms a Participant's enrolment for an event owned by the logged-in Organiser.</summary>
+    /// <response code="200">Enrolment confirmed.</response>
+    /// <response code="401">Not logged in.</response>
+    /// <response code="403">Not the event owner, or not an Organiser.</response>
+    /// <response code="404">Enrolment does not exist.</response>
+    [HttpPut("enrolments/{id}/confirm")]
+    [SessionAuthorize("Organiser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ConfirmEnrolment(int id)
+    {
+        var enrolment = await _db.Enrolments
+            .Include(e => e.Event)
+            .FirstOrDefaultAsync(e => e.EnrolmentId == id);
+
+        if (enrolment == null)
+            return NotFound(new { message = "Enrolment does not exist." });
+        if (enrolment.Event.OrganiserId != CurrentUserId)
+            return StatusCode(403, new { message = "You do not own this event." });
+
+        enrolment.Status = "Confirmed";
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Enrolment confirmed." });
     }
 }
