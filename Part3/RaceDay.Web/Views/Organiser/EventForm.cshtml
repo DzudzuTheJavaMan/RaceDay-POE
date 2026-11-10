@@ -44,9 +44,9 @@
                 <label class="form-label">Banner image (JPG, PNG or WEBP, max 5 MB)</label>
                 @if (ViewBag.CurrentBanner != null)
                 {
-                    <div class="mb-2">
-                        <img src="@ViewBag.CurrentBanner" class="img-fluid rounded" style="max-height:150px" alt="Current banner" />
-                    </div>
+                <div class="mb-2">
+                    <img src="@ViewBag.CurrentBanner" class="img-fluid rounded" style="max-height:150px" alt="Current banner" />
+                </div>
                 }
                 <input type="file" name="banner" accept="image/jpeg,image/png,image/webp" class="form-control" />
             </div>
@@ -56,4 +56,5 @@
     </div>
 </div>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" /> }
