@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build API and tests
+        run: dotnet build Part2/RaceDay.sln -c Release
+
+      - name: Run unit tests
+        run: dotnet test Part2/RaceDay.sln -c Release --no-build
+
+      - name: Build MVC project
+        run: dotnet build Part3/RaceDay.Web/RaceDay.Web.csproj -c Release
+
+      - name: Build Docker images
+        run: |
+          docker build -t raceday-api Part2/RaceDay.Api
+          docker build -t raceday-web Part3/RaceDay.Web
