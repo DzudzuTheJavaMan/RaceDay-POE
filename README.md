@@ -29,7 +29,7 @@ The GitHub Actions workflow (`.github/workflows/ci.yml`) builds the API and the 
 ![Green CI build](docs/ci-green-part3.png)
 
 ### Video
-[Part 3 demo video]()
+A video presentation was not submitted for this part.
 
 ### Known limitations
 - The Participant profile page and profile picture upload are not implemented.
