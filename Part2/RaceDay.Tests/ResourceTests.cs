@@ -296,7 +296,7 @@ public class ResultTests
         var participant = await TestHelpers.LoggedInClient(factory, "runner@test.com", "Participant");
         var enrolmentId = await EnrolmentIdFor(participant, eventId, categoryId);
 
-        var response = await organiser.PostAsJsonAsync($"/api/events/{eventId}/results",
+        var response = await organiser.PostAsJsonAsync("/api/results",
             new { enrolmentId, finishTime = "01:45:30", position = 12 });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -310,7 +310,7 @@ public class ResultTests
         var participant = await TestHelpers.LoggedInClient(factory, "runner@test.com", "Participant");
         var enrolmentId = await EnrolmentIdFor(participant, eventId, categoryId);
 
-        var response = await participant.PostAsJsonAsync($"/api/events/{eventId}/results",
+        var response = await participant.PostAsJsonAsync("/api/results",
             new { enrolmentId, finishTime = "01:45:30", position = 12 });
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -323,7 +323,7 @@ public class ResultTests
         var (organiser, eventId, categoryId) = await Setup.EventWithCategory(factory);
         var participant = await TestHelpers.LoggedInClient(factory, "runner@test.com", "Participant");
         var enrolmentId = await EnrolmentIdFor(participant, eventId, categoryId);
-        await organiser.PostAsJsonAsync($"/api/events/{eventId}/results",
+        await organiser.PostAsJsonAsync("/api/results",
             new { enrolmentId, finishTime = "01:45:30", position = 12 });
 
         var response = await participant.GetAsync("/api/results/me");
